@@ -1,4 +1,5 @@
 import csv
+from operator import attrgetter
 oggetti_stand=[]
 oggetti_espositori=[]
 
@@ -15,7 +16,7 @@ class Espositori:
     def preno_stand(self, codice_stand):
         self.codice_stand = codice_stand
     def __str__(self):
-        return f"stand assgnato: {self.codice_stand} nome: {self.nome} cognome: {self.cognome}"
+        return f"codice:{self.codice} nome: {self.nome} cognome: {self.cognome} stand assgnato: {self.codice_stand} "
 
 
 
@@ -26,14 +27,16 @@ class Stand:
         self.codice = codice
         self.Area = Area
         self.num_Padiglione = num_Padiglione
-        self.prezzo = prezzo
+        self.prezzo = float(prezzo)
         self.codice_espo = None
+
 
     def preno_espo(self,codice_espo):
         self.codice_espo=codice_espo
     def __str__(self):
-        return f" codice del stand :{self.codice} prenotado da {self.codice_espo} "
-
+        return f" codice del stand :{self.codice} prenotado da {self.codice_espo}  numero del padiglione:{self.num_Padiglione} , prezzo {self.prezzo}"
+    def __lt__(self,other):
+        return self.prezzo > other.prezzo
 
 
 class Stand_prese_extra(Stand):
@@ -41,12 +44,21 @@ class Stand_prese_extra(Stand):
     def __init__(self, codice, Area, num_Padiglione, prezzo, num_prese):
         super().__init__(codice, Area, num_Padiglione, prezzo)
         self.num_prese = num_prese
+        self.prezzo= round(float(prezzo) *(1 + 0.07 * float(num_prese)),1)
+    def __str__(self):
+        return f" codice del stand :{self.codice} prenotado da {self.codice_espo}  numero del padiglione:{self.num_Padiglione} , prezzo {self.prezzo}"
+
 
 class Stand_premium(Stand):
     "Classe stand_premium"
     def __init__(self, codice, Area, num_Padiglione, prezzo, tipo):
         super().__init__(codice, Area , num_Padiglione, prezzo )
         self.tipo = tipo
+        self.prezzo = round(float(prezzo)  *1.30,1)
+
+    def __str__(self):
+        return f" codice del stand :{self.codice} prenotado da {self.codice_espo}  numero del padiglione:{self.num_Padiglione} , prezzo {self.prezzo}"
+
 
 
 
@@ -79,7 +91,7 @@ class LingottoFiere:
                     oggetti_stand.append(Stand(line[0], line[1], line[2], line[3]))
 
 
-                elif len(line)==5 and line[4].isalnum():
+                elif len(line)==5 and line[4].isdigit():
                     oggetti_stand.append(Stand_prese_extra(line[0], line[1], line[2], line[3] , line[4]))
 
                 elif len(line)==5 and line[4].isalpha():
@@ -118,8 +130,10 @@ class LingottoFiere:
 
     def elenca_espositori(self):
         """Stampa l'elenco degli espositori mostrando, per ognuno, lo stand a cui è associato, quando applicabile """
-        # TODO
+        for e in oggetti_espositori:
+            print(e)
 
     def stand_ordinati_per_prezzo(self):
         """Restituisce la lista ordinata degli stand in base al prezzo"""
-        # TODO
+        return sorted(oggetti_stand)
+

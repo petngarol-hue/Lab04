@@ -47,6 +47,7 @@ def main():
 
         elif scelta == "5":
             stand_ordinati = lingotto.stand_ordinati_per_prezzo()
+            print(stand_ordinati)
             print("\n--- Stand ordinati per prezzo ---")
             for s in stand_ordinati:
                 print(s)
